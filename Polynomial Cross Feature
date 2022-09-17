@@ -1,0 +1,52 @@
+
+import numpy as np
+from sklearn.preprocessing import PolynomialFeatures
+​
+
+features = np.array([[2, 3],
+                     [2, 3],
+                     [2, 3]])
+features
+# 创建 PolynomialFeatures 对象  
+polynomial_interaction = PolynomialFeatures(degree=2, include_bias=False)
+​
+# 创建 2阶的多项式特征和  交叉特征
+polynomial_interaction.fit_transform(features)
+array([[2., 3., 4., 6., 9.],
+       [2., 3., 4., 6., 9.],
+       [2., 3., 4., 6., 9.]])
+​
+# interaction_only=True  创建只包含多项式的特征
+interaction = PolynomialFeatures(degree=2, 
+                                 interaction_only=True, include_bias=False)
+interaction.fit_transform(features)
+array([[2., 3., 6.],
+       [2., 3., 6.],
+       [2., 3., 6.]])
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import PolynomialFeatures
+#polynomial feature 多项式交叉特征
+
+def col_pf(p=3,col=None,title='PF'):
+    '''不含常数项，含自乘项'''
+    assert p<=3
+    assert p>1
+    l=len(col)+1
+    col=[]
+#     for i in range(1,l):
+#         col.append(title+str(i))
+    if p>=2:
+        col=col+[title+str(i)+str(j) for i in range(1,l) for j in range(i+1,l)]
+    if p>=3:
+        col=col+[title+str(i)+str(j)+str(k)  for i in range(1,l) for j in range(i+1,l) for k in range(j+1,l)]
+    return col
+
+def poly_fea(input=None,degree=2,title='PF'):
+    poly=PolynomialFeatures(degree=degree,interaction_only=True,include_bias=False)
+    pf_trans=poly.fit_transform(input)
+    pf_trans=pf_trans[:,input.shape[1]:]
+    
+    col=col_pf(p=degree,col=input.columns,title=title)
+    
+    return pd.DataFrame(pf_trans,index=input.index,columns=col)
